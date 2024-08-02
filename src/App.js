@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Select from 'react-select';
 import './App.css';
+
+const filterOptions = [
+  { value: 'numbers', label: 'Numbers' },
+  { value: 'alphabets', label: 'Alphabets' },
+  { value: 'highest_alphabet', label: 'Highest Alphabet' }
+];
 
 function App() {
   const [jsonInput, setJsonInput] = useState('');
@@ -26,9 +33,8 @@ function App() {
     }
   };
 
-  const handleOptionChange = (e) => {
-    const value = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedOptions(value);
+  const handleSelectChange = (selected) => {
+    setSelectedOptions(selected ? selected.map(option => option.value) : []);
   };
 
   const renderResponse = () => {
@@ -37,15 +43,21 @@ function App() {
     const { numbers = [], alphabets = [], highest_alphabet = [] } = response;
 
     return (
-      <div>
+      <div className="results-container">
         {selectedOptions.includes('numbers') && numbers.length > 0 && (
-          <div><strong>Numbers:</strong> {numbers.join(', ')}</div>
+          <div className="result-card">
+            <strong>Numbers:</strong> {numbers.join(', ')}
+          </div>
         )}
         {selectedOptions.includes('alphabets') && alphabets.length > 0 && (
-          <div><strong>Alphabets:</strong> {alphabets.join(', ')}</div>
+          <div className="result-card">
+            <strong>Alphabets:</strong> {alphabets.join(', ')}
+          </div>
         )}
         {selectedOptions.includes('highest_alphabet') && highest_alphabet.length > 0 && (
-          <div><strong>Highest Alphabet:</strong> {highest_alphabet.join(', ')}</div>
+          <div className="result-card">
+            <strong>Highest Alphabet:</strong> {highest_alphabet.join(', ')}
+          </div>
         )}
       </div>
     );
@@ -66,20 +78,16 @@ function App() {
       </form>
       {error && <p className="error">{error}</p>}
       {response && (
-        <>
-          <label htmlFor="filter">Filter Response:</label>
-          <select
-            id="filter"
-            multiple
-            value={selectedOptions}
-            onChange={handleOptionChange}
-          >
-            <option value="numbers">Numbers</option>
-            <option value="alphabets">Alphabets</option>
-            <option value="highest_alphabet">Highest Alphabet</option>
-          </select>
+        <div>
+          <Select
+            isMulti
+            options={filterOptions}
+            onChange={handleSelectChange}
+            className="multi-select"
+            classNamePrefix="select"
+          />
           {renderResponse()}
-        </>
+        </div>
       )}
     </div>
   );
